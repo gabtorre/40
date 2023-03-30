@@ -1,0 +1,121 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "options": {
+    "cwd": "${workspaceFolder}"
+  },
+  "tasks": [
+    {
+      "label": "Watch TypeScript",
+      "detail": "Watch all TypeScript projects so type errors get reported in the problems panel",
+      "type": "process",
+      "group": "build",
+      "problemMatcher": "$tsc-watch",
+      "isBackground": true,
+      "command": ["node_modules/.bin/tsc"],
+      "args": ["--build", "tsconfig.all.json", "--watch", "--incremental"]
+    },
+    {
+      "label": "Build cody",
+      "detail": "Build cody.",
+      "type": "npm",
+      "script": "build:dev",
+      "problemMatcher": "$tsc-watch",
+      "options": { "cwd": "client/cody" },
+      "isBackground": true
+    },
+    {
+      "label": "Watch web app",
+      "detail": "Watch files and build the JavaScript bundle (no development server).",
+      "type": "npm",
+      "script": "watch-web",
+      "problemMatcher": [],
+      "isBackground": true
+    },
+    {
+      "label": "Watch code generation",
+      "detail": "Watch files and generate types when files are changed",
+      "type": "npm",
+      "script": "watch-generate",
+      "group": "build",
+      "problemMatcher": [],
+      "isBackground": true
+    },
+    {
+      "label": "stylelint",
+      "command": "pnpm",
+      "args": ["run", "lint:css:all", "--", "--formatter", "compact"],
+      "problemMatcher": {
+        "owner": "stylelint",
+        "applyTo": "closedDocuments",
+        "fileLocation": "absolute",
+        "pattern": [
+          {
+            "regexp": "^(.+): line (\\d+), col (\\d+), (\\w+) - (.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": 4,
+            "message": 5
+          }
+        ]
+      }
+    },
+    {
+      "label": "launch",
+      "command": "${workspaceRoot}/dev/start.sh",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "ESLint all",
+      "detail": "Run ESLint once on all TypeScript projects in parallel to get problems in the problems panel",
+      "dependsOn": [
+        "eslint:web",
+        "eslint:shared",
+        "eslint:browser",
+        "eslint:precise-code-intel",
+        "eslint:release",
+        "eslint:extension-api"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    },
+    {
+      "label": "eslint:shared",
+      "type": "npm",
+      "script": "eslint",
+      "path": "client/shared/",
+      "problemMatcher": ["$eslint-stylish"]
+    },
+    {
+      "label": "eslint:browser",
+      "type": "npm",
+      "script": "eslint",
+      "path": "client/browser/",
+      "problemMatcher": ["$eslint-stylish"]
+    },
+    {
+      "label": "eslint:web",
+      "type": "npm",
+      "script": "eslint",
+      "path": "client/web/",
+      "problemMatcher": ["$eslint-stylish"]
+    },
+    {
+      "label": "eslint:release",
+      "type": "npm",
+      "script": "eslint",
+      "path": "dev/release/",
+      "problemMatcher": ["$eslint-stylish"]
+    },
+    {
+      "label": "eslint:extension-api",
+      "type": "npm",
+      "script": "eslint",
+      "path": "client/extension-api/",
+      "problemMatcher": ["$eslint-stylish"]
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+# Temporary directory for whatever you want
+.tmp/
+
+# Bazel
+bazel-*
+
+# Vim
+*.swp
+
+# JetBrains/IntelliJ
+.idea
+.graphqlconfig
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+.\#*
+.dir-locals.el
+
+# Go
+*.o
+*.a
+*.so
+
+# C
+*.dylib
+
+# Mac OS X
+.DS_Store
+
+# Python
+*.py[cod]
+__pycache__
+
+# langkit
+/workspace/
+
+# Test binaries
+*.test
+
+grapher/python/pysonar2/tests
+grapher/ruby/rubysonar/target
+grapher/ruby/rubysonar/dependency-reduced-pom.xml
+grapher/ruby/yard/.bundle
+npm-debug.log
+pnpm-error.log
+pnpm-debug.log
+.codemod.bookmark
+.elasticbeanstalk/
+
+.tmp/*.jar
+
+/cmd/frontend/internal/graphqlbackend/node_modules
+
+/ui/artifacts
+/ui/node_modules
+/ui/assets/_goTemplates.js
+/ui/assets/analytics.js
+/ui/assets/bundle.js
+/ui/assets/bundle.css
+/ui/assets/sourcebox.js
+/ui/assets/sourcebox.css
+/ui/assets/test.js
+/ui/assets/test.css
+/ui/assets/webpack.manifest.json
+/ui/assets/vs
+/ui/assets/*.html
+/ui/assets/*.map
+/ui/assets/*.txt
+/ui/assets/extension
+/ui/.tmp
+/ui/assets/scripts/
+/ui/assets/styles/
+/ui/assets/*.br
+/ui/assets/*.gz
+/ui/assets/stats-*
+
+*.json.actual
+
+eb-bundle.zip
+
+/release/
+
+/conf/private
+
+/provision/kubernetes/gen
+/deploy/sourcegraph.com/src
+/deploy/sourcegraph/src
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+.bin/
+.env
+
+/vendor/
+
+.gtm/
+
+cmd/src/debug
+cmd/gitserver/debug
+cmd/indexer/debug
+
+/.gtm/
+
+# Client
+node_modules
+package-lock.json
+.nyc_output/
+coverage/
+out/
+client/shared/src/schema/*.d.ts
+puppeteer/
+package-lock.json
+/dist
+sourcegraph-webapp-*.tgz
+*.tsbuildinfo
+graphql-operations.ts
+*.module.scss.d.ts
+dll-bundle
+
+# Extensions
+/client/extension-api/dist
+
+# Direnv
+.envrc
+.direnv
+
+# Docker images
+docker-images/prometheus/config/prometheus_targets.yml
+
+comment.txt
+
+.eslintcache
+storybook-static/
+
+# Certificates
+*.pem
+*.crt
+
+# tilt files
+/dev/tilt/generated-cluster
+/dev/tilt/tilt-watch-targets
+
+# sonarqube
+.scannerwork
+
+# sg command specific things, see ./dev/sg
+sg.config.overwrite.yaml
+# sg Google Cloud API OAuth token
+.sg.token.json
+
+# Generated sitemaps are not committed, they're hosted in a GCS bucket.
+sitemap/
+sitemap_query.db
+
+# Lighthouse CI reports
+.lighthouseci/
+
+# Trivy security vulnerability reports
+*-security-report.html
+
+# CI annotations
+.annotate
+.annotate.lock
+annotations/
+.buildevent_file
+
+# Buildkite analytics files
+test-reports/
+
+# CI linter cache (used only in CI)
+.golangci-lint-cache
+
+# go workspace files shouldn't be committed
+go.work
+go.work.sum
+
+# binary
+/sg
+
+# SCIP
+index.scip
+
+# Buildkite helper and cache files
+/an
+/tr
+/cache-*.tar

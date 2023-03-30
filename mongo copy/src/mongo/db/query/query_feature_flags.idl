@@ -1,0 +1,115 @@
+#    Copyright (C) 2020-present MongoDB, Inc.
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the Server Side Public License, version 1,
+#    as published by MongoDB, Inc.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    Server Side Public License for more details.
+#
+#    You should have received a copy of the Server Side Public License
+#    along with this program. If not, see
+#    <http://www.mongodb.com/licensing/server-side-public-license>.
+#
+#    As a special exception, the copyright holders give permission to link the
+#    code of portions of this program with the OpenSSL library under certain
+#    conditions as described in each individual source file and distribute
+#    linked combinations including the program with the OpenSSL library. You
+#    must comply with the Server Side Public License in all respects for
+#    all of the code used other than as permitted herein. If you modify file(s)
+#    with this exception, you may extend this exception to your version of the
+#    file(s), but you are not obligated to do so. If you do not wish to do so,
+#    delete this exception statement from your version. If you delete this
+#    exception statement from all source files in the program, then also delete
+#    it in the license file.
+#
+
+global:
+  cpp_namespace: "mongo::feature_flags"
+
+feature_flags:
+    featureFlagChangeStreamsRewrite:
+      description: "Feature flag for enabling change streams oplog rewrites"
+      cpp_varname: gFeatureFlagChangeStreamsRewrite
+      default: true
+      version: 5.1
+
+    featureFlagShardedTimeSeries:
+      description: "Feature flag for allowing sharding a Time Series collection"
+      cpp_varname: gFeatureFlagShardedTimeSeries
+      default: true
+      version: 5.1
+
+    featureFlagShardedTimeSeriesUpdateDelete:
+      description: "Feature flag for allowing update and delete operations on a sharded Time Series collection"
+      cpp_varname: gFeatureFlagShardedTimeSeriesUpdateDelete
+      default: true
+      version: 5.1
+
+    featureFlagChangeStreamsFurtherEnrichedEvents:
+      description: "Feature flag for enabling the reshardCollection and refineCollectionShardKey events, as well as enhancements to the updateDescription field for update events"
+      cpp_varname: gFeatureFlagChangeStreamsFurtherEnrichedEvents
+      default: true
+      version: 6.1
+
+    featureFlagCommonQueryFramework:
+      description: "Feature flag for allowing use of Cascades-based query optimizer"
+      cpp_varname: gFeatureFlagCommonQueryFramework
+      default: false
+
+    featureFlagBucketUnpackWithSort:
+      description: "Enables a time-series optimization that allows for partially-blocking sort on time"
+      cpp_varname: gFeatureFlagBucketUnpackWithSort
+      default: true
+      version: 6.0
+
+    featureFlagColumnstoreIndexes:
+      description: "Enables creation of a new columnstore index type"
+      cpp_varname: gFeatureFlagColumnstoreIndexes
+      default: false
+
+    featureFlagServerlessChangeStreams:
+      description: "Feature flag to enable reading change events from the change collection rather than the oplog"
+      cpp_varname: gFeatureFlagServerlessChangeStreams
+      default: false
+
+    featureFlagSbeFull:
+      description: "Feature flag for enabling SBE for a much larger class of queries than what is exposed by default"
+      cpp_varname: gFeatureFlagSbeFull
+      default: false
+
+    featureFlagTelemetry:
+      description: "Feature flag for enabling the telemetry store."
+      cpp_varname: gFeatureFlagTelemetry
+      default: false
+
+    featureFlagBitwiseAggOperators:
+      description: "Feature flag for enabling support for bitwise operators in the aggregation language."
+      cpp_varname: gFeatureFlagBitwise
+      default: true
+      version: 6.3
+
+    featureFlagCompoundWildcardIndexes:
+      description: "Feature flag to enable compound wildcard indexes."
+      cpp_varname: gFeatureFlagCompoundWildcardIndexes
+      default: true
+      version: 7.0
+
+    featureFlagShardedSearchCustomSort:
+      description: "Feature flag to enable user specified sort for sharded $search queries."
+      cpp_varname: gFeatureFlagShardedSearchCustomSort
+      default: true
+      version: 7.0
+
+    featureFlagUserRoles:
+      description: "Feature flag to enable usage of $$USER_ROLES."
+      cpp_varname: gFeatureFlagUserRoles
+      default: true
+      version: 7.0
+
+    featureFlagApproxPercentiles:
+      description: "Feature flag to enable approximate $percentile accumulator/expression."
+      cpp_varname: gFeatureFlagApproxPercentiles
+      default: false

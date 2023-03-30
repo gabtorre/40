@@ -1,0 +1,16 @@
+# Client objects are leaked in threads that are never terminated
+leak:mongo::Client::Client
+
+# DiagnosticListeners and WaitListeners need to be available in detached threads
+leak:mongo::latch_detail::getDiagnosticListenerState
+leak:mongo::latch_detail::installDiagnosticListener
+leak:mongo::Interruptible::installWaitListener
+
+# The singleton must live throughout the lifetime of all SSL threads
+leak::mongo::SSLThreadInfo::ThreadIDManager::idManager
+
+leak:glob64
+
+# Thread spawn to cancel ongoing migration is not joined at mongod shutdown.
+# TODO (SERVER-67732): Remove this suppression as soon as we have a consolidated solution.
+leak:mongo:MigrationDestinationManager::onStepDown

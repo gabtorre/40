@@ -1,0 +1,355 @@
+{
+  "Repos": [
+   {
+    "ID": "MDEwOlJlcG9zaXRvcnkyODQ1NzgyMw==",
+    "DatabaseID": 28457823,
+    "NameWithOwner": "freeCodeCamp/freeCodeCamp",
+    "Description": "freeCodeCamp.org's open-source codebase and curriculum. Learn to code for free.",
+    "URL": "https://github.com/freeCodeCamp/freeCodeCamp",
+    "IsPrivate": false,
+    "IsFork": false,
+    "IsArchived": false,
+    "IsLocked": false,
+    "IsDisabled": false,
+    "ViewerPermission": "READ",
+    "RepositoryTopics": {
+     "Nodes": [
+      {
+       "Topic": {
+        "Name": "learn-to-code"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "nonprofits"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "programming"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "nodejs"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "react"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "d3"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "careers"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "education"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "teachers"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "javascript"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "certification"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "curriculum"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "math"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "community"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "freecodecamp"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "hacktoberfest"
+       }
+      }
+     ]
+    },
+    "StargazerCount": 361294,
+    "ForkCount": 31019
+   },
+   {
+    "ID": "MDEwOlJlcG9zaXRvcnkxNzc3MzY1MzM=",
+    "DatabaseID": 177736533,
+    "NameWithOwner": "996icu/996.ICU",
+    "Description": "Repo for counting stars and contributing. Press F to pay respect to glorious developers.",
+    "URL": "https://github.com/996icu/996.ICU",
+    "IsPrivate": false,
+    "IsFork": false,
+    "IsArchived": false,
+    "IsLocked": false,
+    "IsDisabled": false,
+    "ViewerPermission": "READ",
+    "RepositoryTopics": {
+     "Nodes": []
+    },
+    "StargazerCount": 265043,
+    "ForkCount": 21462
+   },
+   {
+    "ID": "MDEwOlJlcG9zaXRvcnk2MDQ5MzEwMQ==",
+    "DatabaseID": 60493101,
+    "NameWithOwner": "jwasham/coding-interview-university",
+    "Description": "A complete computer science study plan to become a software engineer.",
+    "URL": "https://github.com/jwasham/coding-interview-university",
+    "IsPrivate": false,
+    "IsFork": false,
+    "IsArchived": false,
+    "IsLocked": false,
+    "IsDisabled": false,
+    "ViewerPermission": "READ",
+    "RepositoryTopics": {
+     "Nodes": [
+      {
+       "Topic": {
+        "Name": "computer-science"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "interview"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "programming-interviews"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "study-plan"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "data-structures"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "algorithms"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "software-engineering"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "algorithm"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "coding-interviews"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "interview-prep"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "coding-interview"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "interview-preparation"
+       }
+      }
+     ]
+    },
+    "StargazerCount": 246973,
+    "ForkCount": 65490
+   },
+   {
+    "ID": "MDEwOlJlcG9zaXRvcnkyMTczNzQ2NQ==",
+    "DatabaseID": 21737465,
+    "NameWithOwner": "sindresorhus/awesome",
+    "Description": "😎 Awesome lists about all kinds of interesting topics",
+    "URL": "https://github.com/sindresorhus/awesome",
+    "IsPrivate": false,
+    "IsFork": false,
+    "IsArchived": false,
+    "IsLocked": false,
+    "IsDisabled": false,
+    "ViewerPermission": "READ",
+    "RepositoryTopics": {
+     "Nodes": [
+      {
+       "Topic": {
+        "Name": "awesome"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "awesome-list"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "unicorns"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "lists"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "resources"
+       }
+      }
+     ]
+    },
+    "StargazerCount": 238837,
+    "ForkCount": 24935
+   },
+   {
+    "ID": "MDEwOlJlcG9zaXRvcnk4NTA3NzU1OA==",
+    "DatabaseID": 85077558,
+    "NameWithOwner": "kamranahmedse/developer-roadmap",
+    "Description": "Interactive roadmaps, guides and other educational content to help developers grow in their careers.",
+    "URL": "https://github.com/kamranahmedse/developer-roadmap",
+    "IsPrivate": false,
+    "IsFork": false,
+    "IsArchived": false,
+    "IsLocked": false,
+    "IsDisabled": false,
+    "ViewerPermission": "READ",
+    "RepositoryTopics": {
+     "Nodes": [
+      {
+       "Topic": {
+        "Name": "computer-science"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "developer-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "frontend-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "devops-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "backend-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "react-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "angular-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "python-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "go-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "java-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "dba-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "vue-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "blockchain-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "javascript-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "nodejs-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "qa-roadmap"
+       }
+      },
+      {
+       "Topic": {
+        "Name": "software-architect-roadmap"
+       }
+      }
+     ]
+    },
+    "StargazerCount": 229269,
+    "ForkCount": 32902
+   }
+  ],
+  "TotalCount": 2848396,
+  "EndCursor": "Y3Vyc29yOjU="
+ }

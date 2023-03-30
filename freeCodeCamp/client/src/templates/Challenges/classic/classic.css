@@ -1,0 +1,143 @@
+.reflex-element {
+  overflow: hidden !important;
+}
+
+.monaco-menu .action-label {
+  color: var(--highlight-color);
+  letter-spacing: 0.02em;
+}
+
+.monaco-aria-container {
+  top: -999em;
+}
+
+.monaco-menu .monaco-action-bar.vertical .action-item:nth-last-child(n + 5),
+.monaco-menu .monaco-action-bar.vertical .action-item:last-child,
+.monaco-menu .monaco-action-bar.vertical .action-label.separator {
+  display: none !important;
+}
+
+.action-row {
+  padding: 10px;
+  border-bottom: 1px solid var(--quaternary-background);
+}
+
+.monaco-editor-tabs [aria-expanded='true'],
+.action-row [aria-expanded='true'] {
+  border-color: var(--secondary-color);
+  background-color: var(--secondary-color);
+  color: var(--secondary-background);
+}
+
+.tabs-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.tabs-row button,
+.monaco-editor-tabs button {
+  padding: 6px 12px;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.monaco-editor-tabs {
+  display: flex;
+  margin-inline-end: auto;
+}
+
+.monaco-editor-tabs button:not(:first-child) {
+  border-left: none;
+}
+
+.panel-display-tabs button:first-child,
+.tabs-row > button:first-child {
+  margin: 0 10px 0 0;
+}
+
+.restart-step-tab {
+  margin: 0 auto;
+}
+
+#mobile-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#mobile-layout .nav-tabs {
+  margin-inline-start: 2px;
+  display: flex;
+}
+
+#mobile-layout .nav-tabs > li {
+  flex: 1;
+  text-align: center;
+}
+
+#mobile-layout .nav-tabs > li > a {
+  padding: 5px 10px;
+  text-decoration: none;
+  font-size: 0.8em;
+}
+
+#mobile-layout .nav-tabs > li > a:hover {
+  color: var(--gray-85);
+}
+
+#mobile-layout .tab-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: hidden;
+}
+
+#mobile-layout-pane-editor {
+  display: flex;
+  flex-direction: column;
+}
+
+#mobile-layout .tab-pane {
+  height: 100%;
+  overflow: hidden;
+}
+
+#mobile-layout #mobile-layout-pane-instructions {
+  overflow-y: auto;
+}
+
+#mobile-layout-pane-instructions:focus-visible {
+  outline-offset: -2px;
+}
+
+@supports not selector(:focus-visible) {
+  #mobile-layout-pane-instructions:focus {
+    outline-offset: -2px;
+  }
+}
+
+#mobile-layout .nav-tabs > li.active > a {
+  color: var(--quaternary-color);
+  background-color: var(--quaternary-background);
+}
+
+#mobile-layout .monaco-editor-tabs {
+  padding: 10px;
+  width: 100%;
+}
+
+#mobile-layout .monaco-editor-tabs button {
+  flex: 1;
+  max-width: 50%;
+}
+
+/* Focus indicator for tab panel */
+.nav-tabs [role='tab']:focus {
+  outline-offset: -2px;
+}
+
+.nav-tabs [role='tab']:focus:not(:focus-visible) {
+  outline: none;
+}

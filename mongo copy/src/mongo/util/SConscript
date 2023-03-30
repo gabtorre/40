@@ -1,0 +1,1018 @@
+# -*- mode: python -*-
+
+from site_scons.mongo import insort_wrapper
+import subprocess
+import sys
+import os
+
+Import([
+    "endian",
+    "env",
+    "get_option",
+    "has_option",
+    "use_libunwind",
+    "use_system_version_of_library",
+    "version_extra",
+    "version_parts",
+])
+
+env = env.Clone()
+
+env.InjectThirdParty('asio')
+
+js_engine_ver = get_option("js-engine") if get_option("server-js") == "on" else "none"
+
+module_list = ',\n'.join(['"{0}"_sd'.format(x) for x in env['MONGO_MODULES']])
+
+
+# Render the MONGO_BUILDINFO_ENVIRONMENT_DATA dict into an initializer for a
+# `std::vector<VersionInfoInterface::BuildInfoField>`.
+def fmtBuildInfo(data):
+    def fmtBool(val):
+        return "true" if val else "false"
+
+    def fmtStr(val):
+        return 'R"({0})"_sd'.format(val.replace("\\", r"\\"))
+
+    def fmtObj(obj):
+        return '{{{}, {}, {}, {}}}'.format(
+            fmtStr(obj['key']), fmtStr(env.subst(obj['value'])), fmtBool(obj['inBuildInfo']),
+            fmtBool(obj['inVersion']))
+
+    return ',\n'.join([fmtObj(obj) for _, obj in data.items()])
+
+
+buildInfoInitializer = fmtBuildInfo(env['MONGO_BUILDINFO_ENVIRONMENT_DATA'])
+
+generatedVersionFile = env.Substfile(
+    'version_constants.h.in',
+    SUBST_DICT=[
+        ('@mongo_version@', env['MONGO_VERSION']),
+        ('@mongo_version_major@', version_parts[0]),
+        ('@mongo_version_minor@', version_parts[1]),
+        ('@mongo_version_patch@', version_parts[2]),
+        ('@mongo_version_extra@', version_parts[3]),
+        ('@mongo_version_extra_str@', version_extra),
+        ('@mongo_git_hash@', env['MONGO_GIT_HASH']),
+        ('@buildinfo_js_engine@', js_engine_ver),
+        ('@buildinfo_allocator@', env['MONGO_ALLOCATOR']),
+        ('@buildinfo_modules@', module_list),
+        ('@buildinfo_environment_data@', buildInfoInitializer),
+    ],
+)
+env.Alias('generated-sources', generatedVersionFile)
+
+if env.TargetOSIs('windows'):
+    enterpriseEnv = env.Clone().InjectModule("enterprise")
+    generatedResourceConstantFile = enterpriseEnv.Substfile(
+        'resource_constants.h.in',
+        SUBST_DICT=[
+            ('@mongo_version@', env['MONGO_VERSION']),
+            ('@mongo_version_major@', version_parts[0]),
+            ('@mongo_version_minor@', version_parts[1]),
+            ('@mongo_version_patch@', version_parts[2]),
+            ('@mongo_git_hash@', env['MONGO_GIT_HASH']),
+        ],
+    )
+    env.Alias('generated-sources', generatedResourceConstantFile)
+
+# Shim library for boost to depend on
+env.Library(
+    target='boost_assert_shim',
+    source=[
+        'boost_assert_shim.cpp',
+    ],
+    LIBDEPS_TAGS=[
+        # NOTE: This library *must not* depend on any mongodb code
+        'lint-leaf-node-no-deps',
+    ],
+)
+
+env.SConscript(
+    dirs=[
+        'cmdline_utils',
+        'concurrency',
+        'immutable',
+        'net',
+        'options_parser',
+        'version',
+    ],
+    exports=[
+        'env',
+        'version_extra',
+        'version_parts',
+    ],
+)
+
+env.Library(
+    target='version_impl',
+    source=[
+        'version_impl.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ],
+)
+
+env.Library(
+    target='intrusive_counter',
+    source=[
+        'intrusive_counter.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ],
+)
+
+env.Library(
+    target='log_and_backoff',
+    source=[
+        'log_and_backoff.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ],
+)
+
+env.Library(
+    target='summation',
+    source=[
+        'summation.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ],
+)
+
+env.Library(
+    target='progress_meter',
+    source=[
+        'progress_meter.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ],
+)
+
+env.Library(
+    target='md5',
+    source=[
+        'md5.cpp',
+        'password_digest.cpp',
+    ],
+)
+
+env.Library(
+    target='clock_source_mock',
+    source=[
+        'clock_source_mock.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ],
+)
+
+env.Library(
+    target='alarm',
+    source=[
+        'alarm.cpp',
+        'alarm_runner_background_thread.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+        'clock_sources',
+    ],
+)
+
+env.Library(
+    target="processinfo",
+    source=[
+        "processinfo.cpp",
+        "processinfo_${TARGET_OS}.cpp",
+    ],
+    LIBDEPS=[
+        "$BUILD_DIR/mongo/base",
+    ],
+    LIBDEPS_PRIVATE=[
+        'pcre_wrapper',
+    ],
+)
+
+env.Library(
+    target='fail_point',
+    source=[
+        'fail_point.cpp',
+        'fail_point_server_parameter.idl',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/bson/util/bson_extract',
+        '$BUILD_DIR/mongo/db/server_base',
+    ],
+)
+
+env.Benchmark(
+    target='fail_point_bm',
+    source=[
+        'fail_point_bm.cpp',
+    ],
+    LIBDEPS=[
+        'fail_point',
+    ],
+)
+
+env.Library(
+    target="testing_options",
+    source=[
+        "testing_options.cpp",
+        'testing_options.idl',
+    ],
+    LIBDEPS_PRIVATE=[
+        "$BUILD_DIR/mongo/db/server_base",
+    ],
+)
+
+env.Library(
+    target='namespace_string_database_name_util',
+    source=[
+        'database_name_util.cpp',
+        'namespace_string_util.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/db/multitenancy',
+        '$BUILD_DIR/mongo/db/server_base',
+        '$BUILD_DIR/mongo/db/server_feature_flags',
+    ],
+)
+
+env.CppUnitTest(
+    target='namespace_string_util_test',
+    source=[
+        'namespace_string_util_test.cpp',
+    ],
+    LIBDEPS=[
+        'namespace_string_database_name_util',
+    ],
+)
+
+env.CppUnitTest(
+    target='database_name_util_test',
+    source=[
+        'database_name_util_test.cpp',
+    ],
+    LIBDEPS=[
+        'namespace_string_database_name_util',
+    ],
+)
+
+env.CppUnitTest(
+    target='concurrent_shared_values_map_test',
+    source=[
+        'concurrent_shared_values_map_test.cpp',
+    ],
+    LIBDEPS=[
+        "$BUILD_DIR/mongo/base",
+    ],
+)
+
+env.Library(
+    target="periodic_runner",
+    source=[
+        "periodic_runner.cpp",
+    ],
+    LIBDEPS=[
+        "$BUILD_DIR/mongo/base",
+    ],
+)
+
+env.Library(
+    target="periodic_runner_impl",
+    source=[
+        "periodic_runner_impl.cpp",
+    ],
+    LIBDEPS=[
+        "$BUILD_DIR/mongo/base",
+        "$BUILD_DIR/mongo/db/service_context",
+        "periodic_runner",
+    ],
+)
+
+env.Library(
+    target='periodic_runner_factory',
+    source=[
+        'periodic_runner_factory.cpp',
+    ],
+    LIBDEPS=[
+        "$BUILD_DIR/mongo/db/service_context",
+        'periodic_runner',
+        'periodic_runner_impl',
+    ],
+)
+
+env.Library(
+    target='background_job',
+    source=[
+        "background.cpp",
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+        'concurrency/spin_lock',
+    ],
+)
+
+env.Library(
+    target='caching',
+    source=[
+        'read_through_cache.cpp',
+    ],
+    LIBDEPS_PRIVATE=[
+        '$BUILD_DIR/mongo/base',
+        '$BUILD_DIR/mongo/db/service_context',
+    ],
+)
+
+env.Library(
+    target='tracing_support',
+    source=[
+        'tracing_support.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ],
+)
+
+env.CppUnitTest(
+    target='tracing_support_test',
+    source=[
+        'tracing_support_test.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/util/clock_source_mock',
+        '$BUILD_DIR/mongo/util/tracing_support',
+    ],
+)
+
+env.CppUnitTest(
+    target='thread_safety_context_test',
+    source=[
+        'thread_safety_context_test.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ],
+)
+
+if env['MONGO_ALLOCATOR'] in ['tcmalloc', 'tcmalloc-experimental']:
+    tcmspEnv = env.Clone()
+
+    if not use_system_version_of_library('tcmalloc'):
+
+        # Add in the include path for our vendored tcmalloc.
+        tcmspEnv.InjectThirdParty('gperftools')
+
+        # If our changes to tcmalloc are ever upstreamed, this should become set based on a top
+        # level configure check, though its effects should still be scoped just to these files.
+        tcmspEnv.Append(CPPDEFINES=[
+            'MONGO_HAVE_GPERFTOOLS_GET_THREAD_CACHE_SIZE',
+            'MONGO_HAVE_GPERFTOOLS_SIZE_CLASS_STATS',
+        ])
+
+    if not use_system_version_of_library('valgrind'):
+        # Include valgrind since tcmalloc disables itself while running under valgrind
+        tcmspEnv.InjectThirdParty('valgrind')
+
+    tcmspEnv.Library(
+        target='tcmalloc_set_parameter',
+        source=[
+            'tcmalloc_server_status_section.cpp',
+            'tcmalloc_set_parameter.cpp',
+            'tcmalloc_parameters.idl',
+            'heap_profiler.cpp',
+        ],
+        LIBDEPS_PRIVATE=[
+            '$BUILD_DIR/mongo/db/commands/server_status_core',
+            '$BUILD_DIR/mongo/db/server_base',
+            '$BUILD_DIR/mongo/transport/service_executor',
+            'processinfo',
+        ],
+        LIBDEPS_DEPENDENTS=[
+            '$BUILD_DIR/mongo/db/mongod_initializers',
+            '$BUILD_DIR/mongo/s/mongos_initializers',
+        ],
+        LIBDEPS_TAGS=[
+            'lint-allow-nonprivate-on-deps-dependents',
+        ],
+    )
+
+env.Library(
+    target='winutil',
+    source=[
+        'winutil.cpp',
+    ],
+)
+
+env.Library(
+    target='ntservice',
+    source=[
+        'ntservice.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/util/options_parser/options_parser',
+        'signal_handlers',
+    ],
+)
+
+env.Library(
+    target='clock_sources',
+    source=[
+        'background_thread_clock_source.cpp',
+        'clock_source.cpp',
+        'fast_clock_source_factory.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ],
+)
+
+if get_option('use-diagnostic-latches') == 'on':
+    env.Library(
+        target='diagnostic_info',
+        source=[
+            'diagnostic_info.cpp',
+        ],
+        LIBDEPS=[
+            '$BUILD_DIR/mongo/base',
+            "$BUILD_DIR/mongo/db/service_context",
+        ],
+    )
+
+    env.Library(
+        target='latch_analyzer',
+        source=[
+            'latch_analyzer.cpp',
+        ],
+        LIBDEPS_PRIVATE=[
+            '$BUILD_DIR/mongo/base',
+            '$BUILD_DIR/mongo/db/commands/server_status_core',
+            '$BUILD_DIR/mongo/db/service_context',
+        ],
+    )
+
+env.Benchmark(
+    target='clock_source_bm',
+    source=[
+        'clock_source_bm.cpp',
+    ],
+    LIBDEPS=[
+        'clock_sources',
+        'processinfo',
+    ],
+)
+
+env.Library(
+    target='elapsed_tracker',
+    source=[
+        'elapsed_tracker.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+        'net/network',  # this is for using listener to check elapsed time
+    ],
+)
+
+env.Library(
+    target="secure_compare_memory",
+    source=[
+        'secure_compare_memory.cpp',
+    ],
+    LIBDEPS=[
+        "$BUILD_DIR/mongo/base",
+    ],
+)
+
+env.Library(
+    target='dns_query',
+    source=[
+        'dns_query.cpp',
+    ],
+    LIBDEPS_PRIVATE=[
+        "$BUILD_DIR/mongo/base",
+    ],
+)
+
+env.Library(
+    target="secure_zero_memory",
+    source=[
+        'secure_zero_memory.cpp',
+    ],
+    LIBDEPS=[
+        "$BUILD_DIR/mongo/base",
+    ],
+)
+
+env.Library(
+    target="signal_handlers",
+    source=[
+        "signal_handlers.cpp",
+        "signal_win32.cpp",
+    ],
+    LIBDEPS=[
+        "$BUILD_DIR/mongo/db/log_process_details",
+        "$BUILD_DIR/mongo/db/server_base",
+        "$BUILD_DIR/mongo/db/service_context",
+    ],
+)
+
+env.Library(
+    target='safe_num',
+    source=[
+        'safe_num.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ],
+)
+
+env.Library(
+    target='password',
+    source=[
+        'password.cpp',
+        'password_params.idl',
+    ],
+    LIBDEPS_PRIVATE=[
+        '$BUILD_DIR/mongo/db/server_base',
+    ],
+)
+
+env.Library(
+    target='executor_stats',
+    source=[
+        'executor_stats.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ],
+)
+
+env.CppUnitTest(
+    target='executor_stats_test',
+    source=[
+        'executor_stats_test.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/util/clock_source_mock',
+        '$BUILD_DIR/mongo/util/executor_stats',
+    ],
+)
+
+env.Benchmark(
+    target='decimal_counter_bm',
+    source=[
+        'decimal_counter_bm.cpp',
+    ],
+    LIBDEPS=[],
+)
+
+env.Benchmark(
+    target='itoa_bm',
+    source=[
+        'itoa_bm.cpp',
+    ],
+    LIBDEPS=[],
+)
+
+env.Benchmark(
+    target='future_bm',
+    source=[
+        'future_bm.cpp',
+    ],
+    LIBDEPS=[],
+)
+
+env.Benchmark(
+    target='tick_source_bm',
+    source=[
+        'tick_source_bm.cpp',
+    ],
+    LIBDEPS=[],
+)
+
+env.Library(
+    target='future_util',
+    source=[
+        'future_util.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/executor/task_executor_interface',
+    ],
+)
+
+pcre_env = env.Clone()
+pcre_env.InjectThirdParty(libraries=['pcre2'])
+pcre_env.Library(
+    target=[
+        'pcre_wrapper',
+    ],
+    source=[
+        'pcre.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ],
+    LIBDEPS_PRIVATE=[
+        '$BUILD_DIR/third_party/shim_pcre2',
+    ],
+)
+
+env.Library(
+    target='pcre_util',
+    source=[
+        'pcre_util.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+        'pcre_wrapper',
+    ],
+)
+
+env.Benchmark(
+    target='hash_table_bm',
+    source='hash_table_bm.cpp',
+    LIBDEPS=[],
+)
+
+if env.TargetOSIs('linux'):
+    env.Library(
+        target='procparser',
+        source=[
+            "procparser.cpp",
+        ],
+        LIBDEPS=[
+            '$BUILD_DIR/mongo/base',
+        ],
+        LIBDEPS_PRIVATE=[
+            'pcre_wrapper',
+        ],
+    )
+
+if env.TargetOSIs('windows'):
+    env.Library(
+        target='perfctr_collect',
+        source=[
+            "perfctr_collect.cpp",
+        ],
+        LIBDEPS=[
+            '$BUILD_DIR/mongo/base',
+        ],
+    )
+
+icuEnv = env.Clone()
+
+if not use_system_version_of_library("icu"):
+    generateICUInit = icuEnv.Command(
+        target="icu_init.cpp",
+        source=[
+            "generate_icu_init_cpp.py",
+            ("$BUILD_DIR/third_party/icu4c-57.1/source/mongo_sources/icudt57l.dat"
+             if endian == "little" else
+             "$BUILD_DIR/third_party/icu4c-57.1/source/mongo_sources/icudt57b.dat"),
+        ],
+        action="$PYTHON ${SOURCES[0]} -o $TARGET -i ${SOURCES[1]}",
+    )
+    icuEnv.Alias("generated-sources", generateICUInit)
+
+    icuEnv.InjectThirdParty("icu")
+    # Since we are injecting the third-party ICU headers, we must also copy the same defines that we
+    # use to configure ICU when building ICU sources. See comment in
+    # src/third_party/icu4c-57.1/source/SConscript.
+    icuEnv.Append(
+        CPPDEFINES=[
+            ('UCONFIG_NO_BREAK_ITERATION', 1),
+            ('UCONFIG_NO_FORMATTING', 1),
+            ('UCONFIG_NO_TRANSLITERATION', 1),
+            ('UCONFIG_NO_REGULAR_EXPRESSIONS', 1),
+            ("U_CHARSET_IS_UTF8", 1),
+            ("U_DISABLE_RENAMING", 1),
+            ("U_STATIC_IMPLEMENTATION", 1),
+            ("U_USING_ICU_NAMESPACE", 0),
+        ], )
+
+# When using ICU from third_party, icu_init.cpp will load a subset of
+# ICU's data files using udata_setCommonData() in an initializer.
+# When using the system ICU, we rely on those files being in the install path.
+icuEnv.Library(
+    target='icu_init',
+    source=[
+        'icu_init.cpp' if not use_system_version_of_library('icu') else 'icu_init_stub.cpp',
+    ],
+    LIBDEPS_PRIVATE=[
+        '$BUILD_DIR/mongo/base',
+        '$BUILD_DIR/third_party/shim_icu',
+    ],
+)
+
+icuEnv.Library(
+    target='icu',
+    source=[
+        'icu.cpp',
+    ],
+    LIBDEPS_PRIVATE=[
+        '$BUILD_DIR/mongo/base',
+        '$BUILD_DIR/third_party/shim_icu',
+        'icu_init',
+    ],
+)
+
+icuEnv.CppUnitTest(
+    target='util_test',
+    source=[
+        'alarm_test.cpp',
+        'aligned_test.cpp',
+        'assert_util_test.cpp',
+        'background_job_test.cpp',
+        'background_thread_clock_source_test.cpp',
+        'base64_test.cpp',
+        'cancellation_test.cpp',
+        'clock_source_mock_test.cpp',
+        'concepts_test.cpp',
+        'container_size_helper_test.cpp',
+        'ctype_test.cpp',
+        'decimal_counter_test.cpp',
+        'decorable_test.cpp',
+        'diagnostic_info_test.cpp' if get_option('use-diagnostic-latches') == 'on' else [],
+        'dns_name_test.cpp',
+        'dns_query_test.cpp',
+        'duration_test.cpp',
+        'dynamic_catch_test.cpp',
+        'errno_util_test.cpp',
+        'fail_point_test.cpp',
+        'functional_test.cpp',
+        'future_test_edge_cases.cpp',
+        'future_test_executor_future.cpp',
+        'future_test_future_int.cpp',
+        'future_test_future_move_only.cpp',
+        'future_test_future_void.cpp',
+        'future_test_valid.cpp',
+        'future_test_promise_int.cpp',
+        'future_test_promise_void.cpp',
+        'future_test_shared_future.cpp',
+        'future_util_test.cpp',
+        'histogram_test.cpp',
+        'hierarchical_acquisition_test.cpp',
+        'icu_test.cpp',
+        'interruptible_test.cpp',
+        'invalidating_lru_cache_test.cpp',
+        'itoa_test.cpp',
+        'latch_analyzer_test.cpp' if get_option('use-diagnostic-latches') == 'on' else [],
+        'latency_distribution_test.cpp',
+        'lockable_adapter_test.cpp',
+        'log_with_sampling_test.cpp',
+        'lru_cache_test.cpp',
+        'md5_test.cpp',
+        'md5main.cpp',
+        'optional_util_test.cpp',
+        'out_of_line_executor_test.cpp',
+        'overloaded_visitor_test.cpp',
+        'packaged_task_test.cpp',
+        'pcre_test.cpp',
+        'pcre_util_test.cpp',
+        'periodic_runner_impl_test.cpp',
+        'processinfo_test.cpp',
+        'procparser_test.cpp' if env.TargetOSIs('linux') else [],
+        'producer_consumer_queue_test.cpp',
+        'progress_meter_test.cpp',
+        'read_through_cache_test.cpp',
+        'registry_list_test.cpp',
+        'represent_as_test.cpp',
+        'safe_num_test.cpp',
+        'shared_buffer_test.cpp',
+        'scoped_unlock_test.cpp',
+        'secure_zero_memory_test.cpp',
+        'signal_handlers_synchronous_test.cpp' if not env.TargetOSIs('windows') else [],
+        'static_immortal_test.cpp',
+        'str_test.cpp',
+        'string_map_test.cpp',
+        'strong_weak_finish_line_test.cpp',
+        'summation_test.cpp',
+        'text_test.cpp',
+        'tick_source_test.cpp',
+        'time_support_test.cpp',
+        'util_sort_test.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+        '$BUILD_DIR/mongo/db/auth/authmocks',
+        '$BUILD_DIR/mongo/db/service_context_test_fixture',
+        '$BUILD_DIR/mongo/executor/thread_pool_task_executor_test_fixture',
+        'alarm',
+        'background_job',
+        'caching',
+        'clock_source_mock',
+        'clock_sources',
+        'concurrency/thread_pool',
+        'diagnostic_info' if get_option('use-diagnostic-latches') == 'on' else [],
+        'dns_query',
+        'fail_point',
+        'future_util',
+        'icu',
+        'latch_analyzer' if get_option('use-diagnostic-latches') == 'on' else [],
+        'md5',
+        'pcre_util',
+        'pcre_wrapper',
+        'periodic_runner_impl',
+        'processinfo',
+        'procparser' if env.TargetOSIs('linux') else [],
+        'progress_meter',
+        'safe_num',
+        'secure_zero_memory',
+        'summation',
+    ],
+)
+
+if env.TargetOSIs('windows'):
+    env.CppUnitTest(
+        target='util_windows_test',
+        source=[
+            'ntservice_test.cpp',
+            'perfctr_collect_test.cpp',
+        ],
+        LIBDEPS=[
+            'ntservice',
+            'perfctr_collect',
+        ],
+        LIBS=[
+            'shell32',
+            env['LIBS'],
+        ],
+    )
+
+env.CppUnitTest(target='immutable_test', source=['immutable_test.cpp'], LIBDEPS=[])
+
+env.Benchmark(
+    target='base64_bm',
+    source='base64_bm.cpp',
+)
+
+stacktraceEnv = env.Clone()
+if use_libunwind:
+    stacktraceEnv.InjectThirdParty(libraries=['unwind'])
+    stacktraceEnv.AppendUnique(LIBDEPS=[
+        '$BUILD_DIR/third_party/shim_unwind',
+    ], )
+
+    stacktraceEnv.CppUnitTest(
+        target=[
+            'stacktrace_libunwind_test',
+        ],
+        source=[
+            'stacktrace_libunwind_test_functions.cpp',
+            'stacktrace_libunwind_test.cpp',
+        ],
+        # Do not add LIBDEPS the ordinary way here, as they will override
+        # the LIBDEPS settings for stacktraceEnv, configured above. If
+        # you must add new libdeps here, or for the similar cases
+        # below, do it as follows:
+        #
+        # LIBDEPS=(stacktraceEnv.get('LIBDEPS', []) + [
+        #     some_new_libdep,
+        #     another_new_libdep,
+        # ]),
+        #
+        # to ensure that the new library dependency is added to the
+        # existing LIBDEPS state in the environment and does not
+        # overwrite it.
+    )
+
+stacktrace_test_LIBDEPS = stacktraceEnv.get('LIBDEPS', []).copy()
+insort_wrapper(stacktrace_test_LIBDEPS, 'pcre_wrapper')
+
+stacktraceEnv.CppUnitTest(
+    target='stacktrace_test',
+    source=[
+        'stacktrace_test.cpp',
+    ],
+    LIBDEPS=stacktrace_test_LIBDEPS,
+    EXPORT_SYMBOLS=[
+        'mongo_stacktrace_test_detail_testFunctionWithLinkage',
+    ],
+)
+
+stacktraceEnv.Benchmark(
+    target='stacktrace_bm',
+    source='stacktrace_bm.cpp',
+    # See above for how to handle any future LIBDEPS additions here.
+    # LIBDEPS=...
+)
+
+env.Benchmark(
+    target='string_bm',
+    source='string_bm.cpp',
+)
+
+env.Benchmark(
+    target='cancellation_bm',
+    source='cancellation_bm.cpp',
+)
+
+env.Benchmark(
+    target='uuid_bm',
+    source=[
+        'uuid_bm.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+        'processinfo',
+    ],
+)
+
+if env.ToolchainIs('gcc', 'clang') and env.GetOption('ninja') == 'disabled':
+    # Always prefer v4 gdb, otherwise try anything in the path
+    gdb_bin = env.WhereIs('gdb', ['/opt/mongodbtoolchain/v4/bin']) or env.WhereIs('gdb')
+    if not gdb_bin:
+        Return()
+
+    # GDB has a built in python interpreter, but it may have a python binary on the system which
+    # we can use to check package requirements.
+    python_bin = None
+    result = subprocess.run([gdb_bin, '--configuration'], capture_output=True, text=True)
+    if result.returncode == 0:
+        for line in result.stdout.splitlines():
+            if line.strip().startswith('--with-python='):
+                python_root = line.strip()[len('--with-python=') - 1:]
+                if python_root.endswith(' (relocatable)'):
+                    python_root = python_root[:-len(' (relocatable)')]
+                python_bin = os.path.join(python_root, 'bin/python3')
+    if not python_bin:
+        python_bin = sys.executable
+
+    pretty_printer_test_program = env.Program(target='pretty_printer_test_program', source=[
+        'pretty_printer_test_program.cpp',
+    ], LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+    ], AIB_COMPONENT='pretty-printer-test', AIB_COMPONENTS_EXTRA=[
+        'unittests',
+        'tests',
+    ])
+    pretty_printer_test_program_installed = env.GetAutoInstalledFiles(
+        pretty_printer_test_program[0])
+
+    verify_reqs_file = env.File('#site_scons/mongo/pip_requirements.py')
+    pretty_printer_test = env.Substfile(
+        target='pretty_printer_test.py', source='pretty_printer_test.py.in', SUBST_DICT={
+            '@verify_requirements@':
+                verify_reqs_file.get_contents().decode('utf-8').replace('\\', '\\\\'),
+            '@python_executable@':
+                python_bin
+        })
+    env.Depends(pretty_printer_test, verify_reqs_file)
+    pretty_printer_test_installed = env.AutoInstall(
+        target='$PREFIX_BINDIR',
+        source=pretty_printer_test,
+        AIB_ROLE='runtime',
+        AIB_COMPONENT='pretty-printer-test',
+        AIB_COMPONENTS_EXTRA=[
+            'unittests',
+            'tests',
+        ],
+    )
+
+    pretty_printer_test_launcher = env.Substfile(
+        target='pretty_printer_test_launcher.py',
+        source='pretty_printer_test_launcher.py.in',
+        SUBST_DICT={
+            '@pretty_printer_test_py@': pretty_printer_test_installed[0].path,
+            '@gdb_path@': gdb_bin,
+            '@pretty_printer_test_program@': pretty_printer_test_program_installed[0].path,
+        },
+        AIB_ROLE='runtime',
+        AIB_COMPONENT='pretty-printer-test',
+        AIB_COMPONENTS_EXTRA=[
+            'unittests',
+            'tests',
+        ],
+    )
+    env.Depends(
+        pretty_printer_test_launcher[0],
+        [
+            pretty_printer_test_program,
+            pretty_printer_test,
+        ],
+    )
+    env.AddPostAction(pretty_printer_test_launcher[0],
+                      Chmod(pretty_printer_test_launcher[0], 'ugo+x'))
+
+    pretty_printer_test_launcher_install = env.AutoInstall(
+        target='$PREFIX_BINDIR',
+        source=pretty_printer_test_launcher,
+        AIB_ROLE='runtime',
+        AIB_COMPONENT='pretty-printer-test',
+        AIB_COMPONENTS_EXTRA=[
+            'unittests',
+            'tests',
+        ],
+    )
+    env.Depends(pretty_printer_test_launcher_install,
+                [pretty_printer_test_installed, pretty_printer_test_program_installed])
+    test_env = env.Clone()
+    test_env['ENV'] = os.environ.copy()
+    test_env.RegisterTest('$UNITTEST_LIST', pretty_printer_test_launcher_install[0])
+    test_env.Alias("$UNITTEST_ALIAS", pretty_printer_test_launcher_install[0])

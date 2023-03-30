@@ -1,0 +1,15 @@
+compression.BackfillPlan{
+	Executions: []*compression.QueryExecution{
+		{
+			RecordingTime: time.Time{
+				ext: 63723888000,
+			},
+			SharedRecordings: []time.Time{{ext: 63726566400}},
+		},
+		{
+			Revision:      "21342134",
+			RecordingTime: time.Time{ext: 63729158400},
+		},
+	},
+	RecordCount: 3,
+}

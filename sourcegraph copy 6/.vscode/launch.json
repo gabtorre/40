@@ -1,0 +1,210 @@
+{
+  "version": "0.1.0",
+  "configurations": [
+    {
+      "name": "Attach to Process (from list)",
+      "type": "go",
+      "request": "attach",
+      "mode": "local"
+    },
+    {
+      "name": "Launch Cody Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "preLaunchTask": "Build cody",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceRoot}/client/cody",
+        "--disable-extension=hpargecruos.kodj",
+        "--disable-extension=sourcegraph.cody-ai"
+      ],
+      "sourceMaps": true,
+      "outFiles": ["${workspaceRoot}/client/cody/dist/*.js"],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Launch VS Code Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceRoot}/client/vscode",
+        "--disable-extension=kandalatj.sourcegraph-preview",
+        "--disable-extension=sourcegraph.sourcegraph"
+      ],
+      "stopOnEntry": false,
+      "sourceMaps": true,
+      "outFiles": ["${workspaceRoot}/client/vscode/dist/node/*.js"]
+    },
+    {
+      "name": "Launch VS Code Web Extension",
+      "type": "pwa-extensionHost",
+      "debugWebWorkerHost": true,
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceRoot}/client/vscode",
+        "--disable-extension=kandalatj.sourcegraph-preview",
+        "--disable-extension=sourcegraph.sourcegraph",
+        "--extensionDevelopmentKind=web",
+        "--disable-web-security"
+      ],
+      "sourceMaps": true,
+      "outFiles": ["${workspaceRoot}/client/vscode/dist/webworker/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Browser extension E2E Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": ["--no-timeouts", "--colors", "${workspaceFolder}/client/browser/src/e2e/github.test"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "TS_NODE_LOG_ERROR": "true",
+        "E2E_BROWSER": "chrome"
+      }
+    },
+    {
+      "type": "node",
+      "name": "vscode-jest-tests",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+      "args": [
+        "--color",
+        "--runInBand"
+        // "path/to/test/file",
+        // "-t",
+        // "test name",
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": [
+        "**/async_hooks.js",
+        "**/inspector_async_hook.js"
+        // "**/node_modules/rxjs",
+      ],
+      "smartStep": false
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Gulp",
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/node_modules/gulp/bin/gulp.js",
+      "args": ["webpack"],
+      "env": {
+        // prettier-ignore
+        "TS_NODE_COMPILER_OPTIONS": "{\"module\":\"commonjs\"}"
+      },
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Webapp Chrome",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "webRoot": "${workspaceRoot}/web",
+      "url": "http://localhost:3080/*",
+      "sourceMaps": true
+    },
+    {
+      "name": "Attach to gitserver",
+      "type": "go",
+      "request": "launch",
+      "mode": "remote",
+      "remotePath": "${workspaceRoot}",
+      "port": 2345,
+      "host": "127.0.0.1",
+      "program": "${workspaceRoot}",
+      "env": {},
+      "args": []
+    },
+    {
+      "name": "Attach to indexer",
+      "type": "go",
+      "request": "launch",
+      "mode": "remote",
+      "remotePath": "${workspaceRoot}",
+      "port": 2346,
+      "host": "127.0.0.1",
+      "program": "${workspaceRoot}",
+      "env": {},
+      "args": []
+    },
+    {
+      "name": "Attach to query-runner",
+      "type": "go",
+      "request": "launch",
+      "mode": "remote",
+      "remotePath": "${workspaceRoot}",
+      "port": 2347,
+      "host": "127.0.0.1",
+      "program": "${workspaceRoot}",
+      "env": {},
+      "args": []
+    },
+    {
+      "name": "Attach to repo-updater",
+      "type": "go",
+      "request": "launch",
+      "mode": "remote",
+      "remotePath": "${workspaceRoot}",
+      "port": 2348,
+      "host": "127.0.0.1",
+      "program": "${workspaceRoot}",
+      "env": {},
+      "args": []
+    },
+    {
+      "name": "Attach to searcher",
+      "type": "go",
+      "request": "launch",
+      "mode": "remote",
+      "remotePath": "${workspaceRoot}",
+      "port": 2349,
+      "host": "127.0.0.1",
+      "program": "${workspaceRoot}",
+      "env": {},
+      "args": []
+    },
+    {
+      "name": "Attach to symbols",
+      "type": "go",
+      "request": "launch",
+      "mode": "remote",
+      "remotePath": "${workspaceRoot}",
+      "port": 2350,
+      "host": "127.0.0.1",
+      "program": "${workspaceRoot}",
+      "env": {},
+      "args": []
+    },
+    {
+      "name": "Attach to github-proxy",
+      "type": "go",
+      "request": "launch",
+      "mode": "remote",
+      "remotePath": "${workspaceRoot}",
+      "port": 2351,
+      "host": "127.0.0.1",
+      "program": "${workspaceRoot}",
+      "env": {},
+      "args": []
+    },
+    {
+      "name": "Attach to frontend",
+      "type": "go",
+      "request": "launch",
+      "mode": "remote",
+      "remotePath": "${workspaceRoot}",
+      "port": 2354,
+      "host": "127.0.0.1",
+      "program": "${workspaceRoot}",
+      "env": {},
+      "args": []
+    }
+  ]
+}

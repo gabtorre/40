@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ActionItem Renders contributed action items 1`] = `
+<DocumentFragment>
+   
+  <li>
+    <span
+      class="actionItem"
+    >
+       Action A
+    </span>
+  </li>
+</DocumentFragment>
+`;

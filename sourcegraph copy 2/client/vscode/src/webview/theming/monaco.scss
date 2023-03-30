@@ -1,0 +1,4 @@
+// Remove cursor focus shadow.
+.monaco-editor textarea:focus {
+    box-shadow: none !important;
+}

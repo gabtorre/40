@@ -1,0 +1,94 @@
+# Copyright (C) 2021-present MongoDB, Inc.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the Server Side Public License, version 1,
+# as published by MongoDB, Inc.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# Server Side Public License for more details.
+#
+# You should have received a copy of the Server Side Public License
+# along with this program. If not, see
+# <http://www.mongodb.com/licensing/server-side-public-license>.
+#
+# As a special exception, the copyright holders give permission to link the
+# code of portions of this program with the OpenSSL library under certain
+# conditions as described in each individual source file and distribute
+# linked combinations including the program with the OpenSSL library. You
+# must comply with the Server Side Public License in all respects for
+# all of the code used other than as permitted herein. If you modify file(s)
+# with this exception, you may extend this exception to your version of the
+# file(s), but you are not obligated to do so. If you do not wish to do so,
+# delete this exception statement from your version. If you delete this
+# exception statement from all source files in the program, then also delete
+# it in the license file.
+#
+
+global:
+    cpp_namespace: "mongo"
+
+feature_flags:
+    featureFlagSecurityToken:
+        description: "Enable parsing and handling of SecurityTokens in multitenancy mode"
+        cpp_varname: gFeatureFlagSecurityToken
+        default: false
+    featureFlagRequireTenantID:
+        # Only available with the server parameter "multitenancySupport".
+        description: >-
+            When enabled in conjunction with the server parameter "multitenancySupport",
+            require tenantID to be a part of NamespaceString and TenantDatabase.
+        cpp_varname: gFeatureFlagRequireTenantID
+        default: false
+    featureFlagConnHealthMetrics:
+        description: "Enable newly added cluster connection health metrics"
+        cpp_varname: gFeatureFlagConnHealthMetrics
+        default: true
+        version: 6.3
+    featureFlagGlobalIndexes:
+        description: "Enable support for global indexes"
+        cpp_varname: gFeatureFlagGlobalIndexes
+        default: false
+    featureFlagAsyncRemoteCommandAPI:
+        description: "Enable use of the new async remote command invocation API"
+        cpp_varname: gFeatureFlagAsyncRemoteCmd
+        default: false
+    featureFlagAdditionalParticipants:
+        description: "Adding additional participants to existing transactions"
+        cpp_varname: gFeatureFlagAdditionalParticipants
+        default: false
+    featureFlagUseNewCompactStructuredEncryptionDataCoordinator:
+        description: "Use the new 6.1 compact structured encryption data coordinator"
+        cpp_varname: gFeatureFlagUseNewCompactStructuredEncryptionDataCoordinator
+        default: true
+        version: 6.1
+    featureFlagOIDC:
+        description: "Feature flag for OIDC support"
+        cpp_varname: gFeatureFlagOIDC
+        default: true
+        version: 7.0
+    featureFlagBulkWriteCommand:
+        description: "Support for bulkWrite command and one-shot transactions"
+        cpp_varname: gFeatureFlagBulkWriteCommand
+        default: false
+    featureFlagAuditConfigClusterParameter:
+        description: "Enable use of new auditConfig cluster server parameter"
+        cpp_varname: feature_flags::gFeatureFlagAuditConfigClusterParameter
+        default: false
+    featureFlagStreams:
+        description: "Enable support for streams"
+        cpp_varname: gFeatureFlagStreams
+        default: false
+    featureFlagUseUnreplicatedTruncatesForDeletions:
+        description: "Feature flag to enable pre-image collection and change collection maintenance
+        using unreplicated truncates instead of normal document deletions replicated from the
+        primary."
+        cpp_varname: feature_flags::gFeatureFlagUseUnreplicatedTruncatesForDeletions
+        default: false
+    featureFlagConfigurableX509ClusterAuthn:
+        description: >- 
+            Enable configurable parameters for detection of peer server nodes using X.509 
+            intracluster authentication.
+        cpp_varname: gFeatureFlagConfigurableX509ClusterAuthn
+        default: false

@@ -1,0 +1,12 @@
+*.js
+*.css
+*.svg
+!fonts/*.css
+*.map
+*.ttf
+*.woff2
+*.png
+!img/**
+*.DS_Store
+stats.json
+*.hot-update.json

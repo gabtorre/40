@@ -1,0 +1,74 @@
+# -*- mode: python -*-
+
+Import('env')
+
+env = env.Clone()
+env.InjectThirdParty(libraries=['grpc'])
+
+env.Library(
+    target='grpc_transport_layer',
+    source=[
+        'client_cache.cpp',
+        'wire_version_provider.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/db/wire_version',
+    ],
+)
+
+env.Library(
+    target='grpc_transport_mock',
+    source=[
+        'mock_client_stream.cpp',
+        'mock_server_context.cpp',
+        'mock_server_stream.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+        '$BUILD_DIR/mongo/db/service_context',
+        'grpc_transport_layer',
+    ],
+)
+
+env.CppUnitTest(
+    target='grpc_transport_layer_test',
+    source=[
+        'client_cache_test.cpp',
+        'mock_server_stream_test.cpp',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+        '$BUILD_DIR/mongo/db/service_context_test_fixture',
+        '$BUILD_DIR/mongo/rpc/message',
+        '$BUILD_DIR/mongo/util/clock_source_mock',
+        'grpc_transport_layer',
+        'grpc_transport_mock',
+    ],
+)
+
+protoEnv = env.Clone()
+protoEnv.InjectThirdParty(libraries=['proto'])
+protoEnv.AppendUnique(
+    PROTOC_GEN_TYPES=[['cpp', protoEnv.Dir('.')]], PROTOC_PLUGINS={
+        'grpc': {
+            'plugin': '$PROTOC_GRPC_PLUGIN',
+            'options': ['generate_mock_code=true'],
+            'gen_out': protoEnv.Dir('.'),
+            'exts': ['.grpc.pb.cc', '.grpc.pb.h'],
+        },
+    }, CPPPATH=[protoEnv.Dir('.')])
+protoEnv.Append(CPPPATH=[
+    '$BUILD_DIR/third_party/protobuf/dist/src',
+])
+
+protoEnv.CppUnitTest(
+    target='grpc_core_test',
+    source=[
+        'core_test.cpp',
+        'core_test.proto',
+    ],
+    LIBDEPS=[
+        '$BUILD_DIR/mongo/base',
+        '$BUILD_DIR/third_party/shim_grpc',
+    ],
+)

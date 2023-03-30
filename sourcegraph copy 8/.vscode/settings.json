@@ -1,0 +1,76 @@
+{
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "dist": true,
+    "ui/assets/!(*.go)": true,
+    "client/browser/build": true,
+    "**/coverage": true,
+    "**/out": true,
+    "**/__fixtures__/**": true,
+    "**/.cache": true,
+    "**/.nyc_output": true,
+    "doc/_resources/assets": true,
+    "**/.eslintcache": true
+  },
+  "files.exclude": {
+    "**/*.scss.d.ts": true
+  },
+  "files.associations": {
+    "**/dev/critical-config.json": "jsonc",
+    "**/dev/site-config.json": "jsonc",
+    "**/.mocharc.json": "jsonc"
+  },
+  "json.schemas": [
+    {
+      "fileMatch": ["dev/critical-config.json"],
+      "url": "/schema/critical/critical.schema.json"
+    },
+    {
+      "fileMatch": ["dev/site-config.json"],
+      "url": "/schema/site.schema.json"
+    }
+  ],
+  "editor.formatOnSave": true,
+  "go.useLanguageServer": true,
+  "gopls": {
+    "build.allowImplicitNetworkAccess": true,
+    "local": "github.com/sourcegraph/sourcegraph"
+  },
+  "jest.jestCommandLine": "pnpm run test",
+  "jest.showCoverageOnLoad": false,
+  "gulp.autoDetect": "off",
+  "npm.packageManager": "pnpm",
+  "npm.runSilent": true,
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.format.semicolons": "remove",
+  "typescript.tsc.autoDetect": "off",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.packageManager": "pnpm",
+  "eslint.lintTask.enable": false,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "editor.codeActionsOnSave": {},
+  "eslint.codeActionsOnSave.mode": "problems",
+  "eslint.options": { "cache": true },
+  "eslint.workingDirectories": ["./dev/release", "./client/*"],
+  "go.lintTool": "golangci-lint",
+  "shellformat.flag": "-i 2 -ci",
+  "vscode-graphql.useSchemaFileDefinitions": true,
+  "nixEnvSelector.nixFile": "${workspaceRoot}/shell.nix",
+  "nix.enableLanguageServer": true,
+  "[nix]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2
+  },
+  "files.watcherExclude": {
+    "**/target": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "cody.codebase": "github.com/sourcegraph/sourcegraph"
+}
